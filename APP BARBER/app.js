@@ -5,7 +5,7 @@ const cors = require('cors');
 const moment = require('moment');
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
 // Configuração do banco de dados
 const dbConfig = {
