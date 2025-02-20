@@ -9,11 +9,11 @@ const PORT = 3000;
 
 // Configuração do banco de dados
 const dbConfig = {
-    host: '127.0.0.1', // Ou IP da VPS se for externo
-    user: 'root',      // Usuário do banco
-    password: '',      // Senha do banco
+    host: '127.0.0.1',  // Ou IP da VPS se a aplicação estiver externa
+    user: 'guilhermembo',  // Usuário do banco de dados
+    password: '@Nogui086A!', // Senha do banco de dados
     database: 'barbearia', // Nome do banco
-    port: 3306 // Porta do MySQL/MariaDB
+    port: 3306 // Porta padrão do MySQL/MariaDB
 };
 
 // Middleware
@@ -24,17 +24,17 @@ app.use(express.json()); // Para permitir JSON no corpo das requisições
 async function connectDB() {
     try {
         const connection = await mysql.createConnection(dbConfig);
-        console.log('Conectado ao banco de dados!');
+        console.log('✅ Conectado ao banco de dados MySQL!');
         await connection.end();
     } catch (err) {
-        console.error('Erro ao conectar no MySQL:', err);
+        console.error('❌ Erro ao conectar no MySQL:', err);
     }
 }
 connectDB();
 
 // Rota principal
 app.get('/', (req, res) => {
-    res.send('Servidor funcionando!');
+    res.send('🚀 Servidor funcionando!');
 });
 
 // Endpoint para cadastro de barbearia
@@ -64,14 +64,18 @@ app.post('/register', async (req, res) => {
         const planoExpira = moment().add(3, 'days').format('YYYY-MM-DD HH:mm:ss');
 
         // Inserir nova barbearia no banco
-        const query = "INSERT INFO barbearias (nome, email, senha, telefone, endereco, plano, data_criacao, plano_expira) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        const query = `
+            INSERT INTO barbearias 
+            (nome, email, senha, telefone, endereco, plano, data_criacao, plano_expira) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
         await connection.execute(query, [nome, email, hashedPassword, telefone, endereco, 'básico', dataCriacao, planoExpira]);
 
         await connection.end();
 
-        res.status(201).json({ message: 'Barbearia cadastrada com sucesso!', plano_expira: planoExpira });
+        res.status(201).json({ message: '🎉 Barbearia cadastrada com sucesso!', plano_expira: planoExpira });
     } catch (err) {
-        console.error(err);
+        console.error('❌ Erro ao cadastrar a barbearia:', err);
         res.status(500).json({ error: 'Erro ao cadastrar a barbearia' });
     }
 });
@@ -118,21 +122,17 @@ app.post('/login', async (req, res) => {
         await connection.end();
 
         res.json({
-            message: 'Login bem-sucedido',
+            message: '✅ Login bem-sucedido',
             plano,
             agendamentos: [] // Substituir isso pelo real histórico de agendamentos, se necessário
         });
     } catch (err) {
-        console.error(err);
+        console.error('❌ Erro ao processar login:', err);
         res.status(500).json({ error: 'Erro ao processar login' });
     }
 });
 
 // Iniciar servidor
-try {
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`Servidor rodando em http://0.0.0.0:${PORT}`);
-    });
-} catch (error) {
-    console.error('Erro ao iniciar o servidor:', error);
-}
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Servidor rodando em http://0.0.0.0:${PORT}`);
+});
